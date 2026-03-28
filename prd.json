@@ -1,0 +1,223 @@
+{
+  "project": "C++ 收银系统",
+  "branchName": "ralph/cpp-cashier-system",
+  "description": "使用 C++17 和 CMake 构建的控制台收银系统，支持员工登录、商品管理、购物车结账、优惠券、库存、订单和销售报表，并通过文件持久化保存业务数据。",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "搭建项目脚手架与 CMake 构建",
+      "description": "作为开发者，我希望先有一个可编译运行的项目骨架，以便后续功能可以按模块逐步实现。",
+      "acceptanceCriteria": [
+        "新增 `CMakeLists.txt` 并设置 `CMAKE_CXX_STANDARD 17`",
+        "创建 `include/`、`src/`、`data/`、`tests/` 目录",
+        "新增 `src/main.cpp` 并能输出系统标题后正常启动",
+        "执行 `cmake -S . -B build` 与 `cmake --build build` 成功",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "实现商品模型与商品文件仓储",
+      "description": "作为开发者，我希望先定义商品数据结构并支持文件持久化，以便商品管理和结账功能可以复用同一数据源。",
+      "acceptanceCriteria": [
+        "新增 `Product` 模型，字段包含 `id`、`name`、`category`、`price`、`stock`、`status`",
+        "实现 `data/products.csv` 的加载和保存逻辑",
+        "当商品文件不存在时自动生成至少 5 条示例商品数据",
+        "为商品仓储添加加载/保存测试",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "实现员工模型与员工文件仓储",
+      "description": "作为开发者，我希望先定义员工与角色数据并持久化保存，以便后续登录和权限控制可以直接使用。",
+      "acceptanceCriteria": [
+        "新增 `Employee` 模型，字段包含 `id`、`name`、`passwordHash`、`role`",
+        "实现 `data/employees.csv` 的加载和保存逻辑",
+        "初始化员工数据时至少包含 1 个管理员和 1 个收银员账号",
+        "员工密码以哈希值存储，文件中不保存明文密码",
+        "为员工仓储添加加载/保存测试",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "实现优惠券模型与优惠券文件仓储",
+      "description": "作为开发者，我希望先定义优惠券数据结构和保存方式，以便结账流程可以应用折扣规则。",
+      "acceptanceCriteria": [
+        "新增 `Coupon` 模型，字段包含 `code`、`type`、`value`、`minAmount`、`used`、`enabled`",
+        "实现 `data/coupons.csv` 的加载和保存逻辑",
+        "当优惠券文件不存在时自动生成至少 3 条示例优惠券数据",
+        "`type=fixed` 表示固定减免，`type=percent` 表示百分比折扣",
+        "为优惠券仓储添加加载/保存测试",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "实现订单模型与订单文件仓储",
+      "description": "作为开发者，我希望先定义订单数据结构并支持落盘保存，以便结账结果可以查询和统计。",
+      "acceptanceCriteria": [
+        "新增 `Order` 与 `OrderItem` 模型",
+        "订单字段包含 `orderId`、`timestamp`、`cashierId`、`items`、`originTotal`、`discountAmount`、`payableAmount`、`paidAmount`、`changeAmount`",
+        "实现 `data/orders.csv` 的追加写入逻辑",
+        "实现按 `orderId` 查询和按日期范围查询订单的读取逻辑",
+        "为订单仓储添加写入/查询测试",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "实现登录鉴权与会话状态",
+      "description": "作为员工，我希望使用工号和密码登录系统，以便系统根据我的角色控制可访问的功能。",
+      "acceptanceCriteria": [
+        "启动后显示登录界面并要求输入工号和密码",
+        "使用员工仓储校验账号和密码哈希是否匹配",
+        "登录成功后保存当前会话中的员工编号和角色",
+        "连续 3 次登录失败后返回上级菜单或退出程序",
+        "未登录状态下不能进入业务菜单",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "实现控制台主菜单与角色导航",
+      "description": "作为员工，我希望看到与角色对应的控制台菜单，以便快速进入自己有权限的业务模块。",
+      "acceptanceCriteria": [
+        "管理员主菜单包含：开始收银、商品管理、库存管理、优惠券管理、员工管理、销售报表、退出登录",
+        "收银员主菜单包含：开始收银、浏览商品、查询订单、退出登录",
+        "输入无效菜单编号时给出提示并重新显示当前菜单",
+        "所有子菜单都提供返回上级菜单的选项",
+        "Typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "实现商品管理 CRUD",
+      "description": "作为管理员，我希望新增、修改、删除和查询商品，以便维护门店可售商品信息。",
+      "acceptanceCriteria": [
+        "支持新增商品，并校验商品编号唯一、价格大于 0、库存不小于 0",
+        "支持按商品编号修改 `name`、`category`、`price`、`stock`、`status` 字段",
+        "支持按商品编号删除商品，并在删除前要求确认",
+        "支持查看全部商品、按名称模糊查询、按分类筛选",
+        "所有商品管理操作完成后立即写回 `data/products.csv`",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "实现购物车服务",
+      "description": "作为收银员，我希望把商品加入购物车并修改数量，以便在结账前确认顾客购买明细。",
+      "acceptanceCriteria": [
+        "支持按商品编号和购买数量将商品加入购物车",
+        "购物车条目显示商品名、单价、数量、小计和总计",
+        "支持修改购物车中商品数量和移除商品",
+        "当商品已下架、库存不足或数量小于等于 0 时拒绝加入购物车",
+        "为购物车总价和数量变更逻辑添加测试",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "实现结账、优惠计算与找零",
+      "description": "作为收银员，我希望在结账时应用一张优惠券并计算找零，以便完整完成一次销售。",
+      "acceptanceCriteria": [
+        "结账时计算 `originTotal`、`discountAmount`、`payableAmount`、`changeAmount`",
+        "每笔订单最多使用 1 张优惠券，并校验 `enabled`、`used` 和 `minAmount` 规则",
+        "当顾客实付金额小于应付金额时拒绝完成结账",
+        "结账成功后同步完成：保存订单、扣减商品库存、将已使用优惠券标记为 `used=true`",
+        "为优惠计算、找零计算和库存扣减逻辑添加测试",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "实现库存管理与低库存预警",
+      "description": "作为管理员，我希望查看低库存商品并执行补货，以便避免缺货影响销售。",
+      "acceptanceCriteria": [
+        "库存列表按 `stock` 升序显示商品",
+        "支持按商品编号输入补货数量，且补货数量必须大于 0",
+        "低库存阈值从 `data/config.txt` 或 `data/config.json` 读取，默认值为 10",
+        "管理员进入主菜单时显示低于阈值的商品数量",
+        "补货结果立即写回商品数据文件",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "实现销售报表统计",
+      "description": "作为管理员，我希望查看销售汇总和热门商品统计，以便了解经营情况。",
+      "acceptanceCriteria": [
+        "报表显示今日销售额、累计销售额和订单总数",
+        "报表显示销量 Top 5 商品",
+        "报表显示按商品分类汇总的销售额",
+        "支持按 `YYYY-MM-DD` 输入开始和结束日期筛选报表",
+        "为报表聚合逻辑添加测试",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "实现员工管理功能",
+      "description": "作为管理员，我希望维护员工账号与角色，以便控制谁可以登录系统以及可执行的操作。",
+      "acceptanceCriteria": [
+        "支持新增员工并录入 `id`、`name`、`role`、初始密码",
+        "支持重置任意员工密码，并将新密码以哈希值保存",
+        "支持删除员工，但不能删除当前登录的管理员账号",
+        "员工列表仅显示 `id`、`name`、`role`，不显示密码哈希",
+        "员工管理变更后立即写回 `data/employees.csv`",
+        "Tests pass",
+        "Typecheck passes"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

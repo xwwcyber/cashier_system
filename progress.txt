@@ -1,0 +1,17 @@
+## Codebase Patterns
+- 使用 CMake + C++17 构建，项目根目录的 `CMakeLists.txt` 已默认在 Windows 环境优先查找可用的 `g++`
+- 当前环境下 `cmake -S . -B build` 可直接使用，主程序目标为 `cashier`
+- MinGW 环境下为避免运行时依赖问题，`cashier` 目标使用 `-static-libgcc -static-libstdc++` 静态链接运行时
+- 启动阶段测试使用 `cmake -E echo` 占位命令，后续故事再替换为真实测试可执行文件
+
+## 2026-03-28 21:38:13 - US-001
+- 完成项目脚手架初始化，新增 `include/`、`src/`、`data/`、`tests/` 目录
+- 新增根目录 `CMakeLists.txt`，配置 C++17、主程序目标和测试入口
+- 新增 `src/main.cpp`，启动时输出系统标题并正常退出
+- 新增 `tests/CMakeLists.txt` 占位测试配置与 `.gitignore`
+- Files changed: CMakeLists.txt, src/main.cpp, tests/CMakeLists.txt, .gitignore, prd.json, progress.txt, include/.gitkeep, data/.gitkeep
+- **Learnings for future iterations:**
+  - 当前 Windows 环境默认 `c++.exe` / 部分 `g++` 不稳定，已在根 `CMakeLists.txt` 中优先指向可用的 `E:/vscode/mingw64/bin/g++`
+  - 直接运行 MinGW 产物时需要避免动态运行时依赖问题，因此主可执行文件启用了静态运行时链接
+  - 若后续新增测试目标，优先保持 `ctest --test-dir build --output-on-failure` 可直接通过
+---

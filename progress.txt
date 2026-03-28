@@ -36,7 +36,17 @@
   - bool 字段在 CSV 中使用 '0'/'1' 表示，读取时用 `fields[n] == "1"` 判断
   - Coupon 模型与仓储模式与 Product/Employee 完全一致，后续仓储可直接复用此模式
 ---
-## 2026-03-28 - US-003
+## 2026-03-28 - US-005
+- 实现 `Order` 与 `OrderItem` 模型（orderId、timestamp、cashierId、items、originTotal、discountAmount、payableAmount、paidAmount、changeAmount）
+- 实现 `OrderRepository` 文件仓储，支持追加写入 `data/orders.csv`、loadAll、按 orderId 查询、按日期范围查询
+- items 字段在 CSV 中使用 `|` 分隔各明细、`^` 分隔明细子字段，避免与主字段逗号冲突
+- 新增 `OrderRepositoryTests.cpp`，覆盖：空文件加载、追加写入并读回、多条追加顺序保留、按 id 查询、按日期范围查询五个测试
+- Files changed: include/models/Order.h, include/repositories/OrderRepository.h, src/repositories/OrderRepository.cpp, tests/OrderRepositoryTests.cpp, tests/CMakeLists.txt, CMakeLists.txt, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - 订单 CSV 采用追加模式（`std::ios::app`），文件不存在时自动写表头，避免加载时重建全量文件
+  - items 字段内嵌编码（`|` / `^`）需要自定义解析逻辑，不能用普通 splitCsvLine
+  - 日期范围查询直接对 timestamp 前 10 位做字符串比较，简单可靠，无需第三方日期库
+---
 - 实现 `Employee` 员工模型（id、name、passwordHash、role）
 - 实现 `EmployeeRepository` 文件仓储，支持 `data/employees.csv` 的加载、保存及缺失时自动生成示例数据
 - 新增 `utils/PasswordHash.h`，使用 FNV-1a 算法对密码进行确定性哈希，输出 16 位十六进制字符串

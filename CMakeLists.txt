@@ -28,7 +28,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(include)
 
 # Main executable
-add_executable(cashier src/main.cpp)
+add_executable(
+    cashier
+    src/main.cpp
+    src/repositories/ProductRepository.cpp
+)
 
 if(MINGW)
     target_link_options(cashier PRIVATE -static-libgcc -static-libstdc++)

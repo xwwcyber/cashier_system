@@ -2,7 +2,9 @@
 - 使用 CMake + C++17 构建，项目根目录的 `CMakeLists.txt` 已默认在 Windows 环境优先查找可用的 `g++`
 - 当前环境下 `cmake -S . -B build` 可直接使用，主程序目标为 `cashier`
 - MinGW 环境下为避免运行时依赖问题，`cashier` 目标使用 `-static-libgcc -static-libstdc++` 静态链接运行时
-- 启动阶段测试使用 `cmake -E echo` 占位命令，后续故事再替换为真实测试可执行文件
+- 测试通过 `tests/CMakeLists.txt` 中的独立测试可执行文件接入 `ctest`
+- 文件仓储建议统一使用固定 CSV 表头；`load()` 在文件缺失时负责生成示例数据并立即 `save()` 落盘
+- 仓储层测试优先使用独立测试可执行文件配合临时目录，避免直接读写仓库内 `data/` 目录
 
 ## 2026-03-28 21:38:13 - US-001
 - 完成项目脚手架初始化，新增 `include/`、`src/`、`data/`、`tests/` 目录
@@ -14,4 +16,13 @@
   - 当前 Windows 环境默认 `c++.exe` / 部分 `g++` 不稳定，已在根 `CMakeLists.txt` 中优先指向可用的 `E:/vscode/mingw64/bin/g++`
   - 直接运行 MinGW 产物时需要避免动态运行时依赖问题，因此主可执行文件启用了静态运行时链接
   - 若后续新增测试目标，优先保持 `ctest --test-dir build --output-on-failure` 可直接通过
+---
+## 2026-03-28 21:56:39 - US-002
+- 实现 `Product` 商品模型与 `ProductRepository` 文件仓储，支持 `data/products.csv` 的加载、保存以及缺失文件时自动生成 5 条示例商品
+- 新增商品仓储的 round-trip 与缺失文件初始化测试，并将 CMake 测试从占位命令切换为真实测试可执行文件
+- Files changed: CMakeLists.txt, include/models/Product.h, include/repositories/ProductRepository.h, src/repositories/ProductRepository.cpp, tests/CMakeLists.txt, tests/ProductRepositoryTests.cpp, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - 当前仓储层采用 CSV 文件持久化，首行使用固定表头，后续新增仓储时可复用相同模式
+  - 缺失数据文件时由仓储 `load()` 负责自举示例数据，可避免在主流程里散落初始化逻辑
+  - 仓储测试使用临时目录更稳妥，不会污染项目 `data/` 目录，也便于在 CI 中重复执行
 ---

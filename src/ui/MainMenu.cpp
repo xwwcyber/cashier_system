@@ -7,8 +7,10 @@
 #include "services/CheckoutService.h"
 #include "services/InventoryService.h"
 #include "services/ProductService.h"
+#include "services/SalesReportService.h"
 #include "ui/InventoryManagementUI.h"
 #include "ui/ProductManagementUI.h"
+#include "ui/SalesReportUI.h"
 
 #include <iomanip>
 #include <iostream>
@@ -327,9 +329,11 @@ void MainMenu::handleEmployeeManagement() {
 }
 
 void MainMenu::handleSalesReport() {
-    std::cout << "[销售报表] 功能即将推出。按 Enter 返回。" << std::endl;
-    std::string dummy;
-    std::getline(std::cin, dummy);
+    OrderRepository orderRepository("data/orders.csv");
+    ProductRepository productRepository("data/products.csv");
+    SalesReportService service(orderRepository, productRepository);
+    SalesReportUI ui(std::move(service));
+    ui.run();
 }
 
 void MainMenu::handleBrowseProducts() {

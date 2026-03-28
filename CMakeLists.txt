@@ -40,9 +40,11 @@ add_executable(
     src/services/CartService.cpp
     src/services/CheckoutService.cpp
     src/services/InventoryService.cpp
+    src/services/SalesReportService.cpp
     src/ui/MainMenu.cpp
     src/ui/ProductManagementUI.cpp
     src/ui/InventoryManagementUI.cpp
+    src/ui/SalesReportUI.cpp
 )
 
 if(MINGW)

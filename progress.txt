@@ -141,3 +141,17 @@
   - 配置阈值读取优先级为 `config.txt` > 同目录 `config.json` > 默认值 10，后续其他配置项可沿用同一模式
   - 补货成功后直接调用仓储 `save()` 落盘，重启后无需额外同步步骤
 ---
+## 2026-03-29 - US-012
+- 实现 `SalesReportService`（`include/services/SalesReportService.h` + `src/services/SalesReportService.cpp`），支持全局报表与按日期范围（YYYY-MM-DD）筛选，统计今日销售额、累计销售额、订单总数、销量 Top 5 商品、按分类汇总销售额
+- 实现 `SalesReportUI`（`include/ui/SalesReportUI.h` + `src/ui/SalesReportUI.cpp`），提供查看全局报表和按日期范围查询两个子功能
+- 将 `handleSalesReport` 从占位 stub 替换为真实子菜单
+- 新增 `tests/SalesReportServiceTests.cpp`，覆盖空报表、总销售额与订单数、Top 5 商品、分类汇总、日期范围过滤五类测试
+- 更新 `CMakeLists.txt` 与 `tests/CMakeLists.txt`，接入 `SalesReportService`、`SalesReportUI` 与 `sales_report_service_tests`
+- 执行 `cmake -S . -B build && cmake --build build && ctest --test-dir build --output-on-failure`，全部 10 项测试通过
+- Files changed: include/services/SalesReportService.h, src/services/SalesReportService.cpp, include/ui/SalesReportUI.h, src/ui/SalesReportUI.cpp, src/ui/MainMenu.cpp, CMakeLists.txt, tests/CMakeLists.txt, tests/SalesReportServiceTests.cpp, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - `SalesReportService` 今日销售额独立于日期过滤参数，始终基于当天数据；累计销售额和订单数受过滤影响
+  - 订单 `timestamp` 格式为 `YYYY-MM-DD HH:MM:SS`，取前 10 位做字符串比较即可实现日期过滤
+  - 商品分类通过 ProductRepository 查询，若商品已删除则回退到 "其他" 分类
+  - Top 5 商品按 `totalQuantity` 降序排列，使用 `std::sort` + lambda 实现
+---

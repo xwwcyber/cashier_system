@@ -132,3 +132,19 @@ if(MINGW)
 endif()
 
 add_test(NAME inventory_service_tests COMMAND inventory_service_tests)
+
+add_executable(
+    sales_report_service_tests
+    SalesReportServiceTests.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/ProductRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/OrderRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/SalesReportService.cpp
+)
+
+target_include_directories(sales_report_service_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if(MINGW)
+    target_link_options(sales_report_service_tests PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+add_test(NAME sales_report_service_tests COMMAND sales_report_service_tests)

@@ -117,3 +117,18 @@ if(MINGW)
 endif()
 
 add_test(NAME checkout_service_tests COMMAND checkout_service_tests)
+
+add_executable(
+    inventory_service_tests
+    InventoryServiceTests.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/ProductRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/InventoryService.cpp
+)
+
+target_include_directories(inventory_service_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if(MINGW)
+    target_link_options(inventory_service_tests PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+add_test(NAME inventory_service_tests COMMAND inventory_service_tests)

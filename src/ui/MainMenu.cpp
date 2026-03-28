@@ -5,7 +5,9 @@
 #include "repositories/ProductRepository.h"
 #include "services/CartService.h"
 #include "services/CheckoutService.h"
+#include "services/InventoryService.h"
 #include "services/ProductService.h"
+#include "ui/InventoryManagementUI.h"
 #include "ui/ProductManagementUI.h"
 
 #include <iomanip>
@@ -95,8 +97,14 @@ void MainMenu::run() {
 
 bool MainMenu::showAdminMenu() {
     const auto& emp = auth_.getCurrentEmployee();
+    ProductRepository repository("data/products.csv");
+    InventoryService inventoryService(repository);
+    const auto lowStockCount = inventoryService.getLowStockProducts().size();
+
     std::cout << "\n============================" << std::endl;
     std::cout << "  管理员菜单 [" << emp.name << "]" << std::endl;
+    std::cout << "  低库存商品：" << lowStockCount
+              << " 件（阈值：" << inventoryService.getLowStockThreshold() << "）" << std::endl;
     std::cout << "============================" << std::endl;
     std::cout << "  1. 开始收银" << std::endl;
     std::cout << "  2. 商品管理" << std::endl;
@@ -300,9 +308,10 @@ void MainMenu::handleProductManagement() {
 }
 
 void MainMenu::handleInventoryManagement() {
-    std::cout << "[库存管理] 功能即将推出。按 Enter 返回。" << std::endl;
-    std::string dummy;
-    std::getline(std::cin, dummy);
+    ProductRepository repository("data/products.csv");
+    InventoryService inventoryService(repository);
+    InventoryManagementUI ui(inventoryService);
+    ui.run();
 }
 
 void MainMenu::handleCouponManagement() {

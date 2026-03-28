@@ -10,6 +10,7 @@
 - 购物车服务直接复用 `OrderItem` 作为内存条目结构，后续结账可直接消费 `CartService::getItems()`
 - 购物车数量变更时需要重新查询商品并校验 `status` 与库存，不能只基于旧条目做增量判断
 - 结账统一通过 `CheckoutService` 执行，传入购物车条目、收银员 ID、优惠券码和实付金额后，同步完成折扣计算、库存扣减、优惠券核销与订单追加写入
+- 配置读取优先使用 `data/config.txt` 的 `key=value`，若缺失则回退到同目录 `config.json` 的同名键，缺省值保持在服务层内部
 
 ## 2026-03-28 21:38:13 - US-001
 - 完成项目脚手架初始化，新增 `include/`、`src/`、`data/`、`tests/` 目录
@@ -126,4 +127,17 @@
   - 结账逻辑集中在 `CheckoutService`，UI 层只负责采集输入与展示结果，避免在菜单代码里直接操作仓储
   - 结账前先完成优惠与实付校验，只有校验通过后才执行库存扣减、优惠券核销与订单写入，便于保持状态一致性
   - 结账测试可复用临时目录下的 products/coupons/orders 三个 CSV 文件，直接断言持久化副作用是否生效
+---
+## 2026-03-29 00:37:56 - US-011
+- 实现 `InventoryService`（`include/services/InventoryService.h` + `src/services/InventoryService.cpp`），支持按库存升序查询、低库存预警、从 `data/config.txt` / `data/config.json` 读取阈值以及补货后立即持久化
+- 实现 `InventoryManagementUI`（`include/ui/InventoryManagementUI.h` + `src/ui/InventoryManagementUI.cpp`），提供查看全部库存、查看低库存商品和补货三个子功能
+- 更新 `src/ui/MainMenu.cpp`，管理员主菜单显示低库存商品数量，并将“库存管理”从占位 stub 替换为真实子菜单
+- 新增 `data/config.txt` 默认配置与 `tests/InventoryServiceTests.cpp`，覆盖默认阈值、txt/json 配置读取、库存排序、补货持久化、非法补货数量五类测试
+- 更新 `CMakeLists.txt` 与 `tests/CMakeLists.txt`，接入 `InventoryService`、`InventoryManagementUI` 与 `inventory_service_tests`
+- 执行 `cmake -S . -B build && cmake --build build && ctest --test-dir build --output-on-failure`，全部 9 项测试通过
+- Files changed: CMakeLists.txt, src/ui/MainMenu.cpp, tests/CMakeLists.txt, data/config.txt, include/services/InventoryService.h, src/services/InventoryService.cpp, include/ui/InventoryManagementUI.h, src/ui/InventoryManagementUI.cpp, tests/InventoryServiceTests.cpp, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - 库存管理独立放在 `InventoryService` / `InventoryManagementUI`，主菜单只负责展示摘要并进入子菜单
+  - 配置阈值读取优先级为 `config.txt` > 同目录 `config.json` > 默认值 10，后续其他配置项可沿用同一模式
+  - 补货成功后直接调用仓储 `save()` 落盘，重启后无需额外同步步骤
 ---

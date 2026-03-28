@@ -26,3 +26,15 @@
   - 缺失数据文件时由仓储 `load()` 负责自举示例数据，可避免在主流程里散落初始化逻辑
   - 仓储测试使用临时目录更稳妥，不会污染项目 `data/` 目录，也便于在 CI 中重复执行
 ---
+## 2026-03-28 - US-003
+- 实现 `Employee` 员工模型（id、name、passwordHash、role）
+- 实现 `EmployeeRepository` 文件仓储，支持 `data/employees.csv` 的加载、保存及缺失时自动生成示例数据
+- 新增 `utils/PasswordHash.h`，使用 FNV-1a 算法对密码进行确定性哈希，输出 16 位十六进制字符串
+- 示例数据包含 1 个管理员（E001）和 1 个收银员（E002），密码以哈希值存储
+- 新增 `EmployeeRepositoryTests.cpp`，覆盖：缺失文件自动生成、密码不明文存储、round-trip、哈希确定性四个测试
+- Files changed: include/models/Employee.h, include/repositories/EmployeeRepository.h, include/utils/PasswordHash.h, src/repositories/EmployeeRepository.cpp, tests/EmployeeRepositoryTests.cpp, tests/CMakeLists.txt, CMakeLists.txt, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - 密码哈希工具放在 `include/utils/PasswordHash.h`（纯头文件），后续登录鉴权可直接 include 复用
+  - FNV-1a 哈希无需第三方库，跨平台确定性输出，适合文件持久化的轻量场景
+  - 新增仓储源文件后需同步更新根目录 `CMakeLists.txt` 的 `cashier` 目标源文件列表
+---

@@ -32,6 +32,7 @@ add_executable(
     cashier
     src/main.cpp
     src/repositories/ProductRepository.cpp
+    src/repositories/EmployeeRepository.cpp
 )
 
 if(MINGW)

@@ -25,3 +25,17 @@ if(MINGW)
 endif()
 
 add_test(NAME employee_repository_tests COMMAND employee_repository_tests)
+
+add_executable(
+    coupon_repository_tests
+    CouponRepositoryTests.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/CouponRepository.cpp
+)
+
+target_include_directories(coupon_repository_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if(MINGW)
+    target_link_options(coupon_repository_tests PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+add_test(NAME coupon_repository_tests COMMAND coupon_repository_tests)

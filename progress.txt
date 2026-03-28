@@ -26,6 +26,16 @@
   - 缺失数据文件时由仓储 `load()` 负责自举示例数据，可避免在主流程里散落初始化逻辑
   - 仓储测试使用临时目录更稳妥，不会污染项目 `data/` 目录，也便于在 CI 中重复执行
 ---
+## 2026-03-28 - US-004
+- 实现 `Coupon` 优惠券模型（code、type、value、minAmount、used、enabled）
+- 实现 `CouponRepository` 文件仓储，支持 `data/coupons.csv` 的加载、保存及缺失时自动生成 3 条示例优惠券
+- 示例数据涵盖 fixed（SAVE10、VIP5）和 percent（OFF20）两种类型
+- 新增 `CouponRepositoryTests.cpp`，覆盖：缺失文件自动生成、type 字段验证、round-trip、布尔字段持久化四个测试
+- Files changed: include/models/Coupon.h, include/repositories/CouponRepository.h, src/repositories/CouponRepository.cpp, tests/CouponRepositoryTests.cpp, tests/CMakeLists.txt, CMakeLists.txt, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - bool 字段在 CSV 中使用 '0'/'1' 表示，读取时用 `fields[n] == "1"` 判断
+  - Coupon 模型与仓储模式与 Product/Employee 完全一致，后续仓储可直接复用此模式
+---
 ## 2026-03-28 - US-003
 - 实现 `Employee` 员工模型（id、name、passwordHash、role）
 - 实现 `EmployeeRepository` 文件仓储，支持 `data/employees.csv` 的加载、保存及缺失时自动生成示例数据

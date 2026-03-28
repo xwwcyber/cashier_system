@@ -35,6 +35,7 @@ add_executable(
     src/repositories/EmployeeRepository.cpp
     src/repositories/CouponRepository.cpp
     src/repositories/OrderRepository.cpp
+    src/services/AuthService.cpp
 )
 
 if(MINGW)

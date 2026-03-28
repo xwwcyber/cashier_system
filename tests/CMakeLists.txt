@@ -53,3 +53,18 @@ if(MINGW)
 endif()
 
 add_test(NAME order_repository_tests COMMAND order_repository_tests)
+
+add_executable(
+    auth_service_tests
+    AuthServiceTests.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/EmployeeRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/AuthService.cpp
+)
+
+target_include_directories(auth_service_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if(MINGW)
+    target_link_options(auth_service_tests PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+add_test(NAME auth_service_tests COMMAND auth_service_tests)

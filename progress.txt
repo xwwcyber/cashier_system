@@ -71,3 +71,18 @@
   - 测试中单参数构造函数的 most vexing parse 问题：改用具名中间变量 `Repo r(path); Service s(r);`
   - `AuthService` 使用 `std::optional<Employee>` 持有当前会话，`maxAttempts` 为 constexpr 静态常量
 ---
+## 2026-03-28 - US-007
+- 新增 `include/ui/MainMenu.h` 和 `src/ui/MainMenu.cpp`，实现控制台主菜单
+- 管理员主菜单包含：开始收银、商品管理、库存管理、优惠券管理、员工管理、销售报表、退出登录（共 7 项）
+- 收银员主菜单包含：开始收银、浏览商品、查询订单、退出登录（共 4 项）
+- 输入无效菜单编号时给出提示并重新显示当前菜单
+- 各子功能以占位 stub 实现，后续 US 逐步替换
+- 更新 `src/main.cpp`：登录成功后进入 MainMenu 循环，退出登录后回到登录界面，EOF 时安全退出
+- 更新根 `CMakeLists.txt` 添加 `src/ui/MainMenu.cpp`
+- Files changed: include/ui/MainMenu.h, src/ui/MainMenu.cpp, src/main.cpp, CMakeLists.txt, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - UI 层源文件放 `src/ui/`，头文件放 `include/ui/`，新增后同步更新根 CMakeLists.txt
+  - MainMenu 以引用持有 AuthService，角色判断通过 `emp.role == "admin"` 字符串比较
+  - 菜单读取使用 `std::getline` + `std::stoi`，捕获异常处理非数字输入
+  - cin.eof() 检测可防止无 tty 环境下的无限循环
+---

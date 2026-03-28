@@ -99,3 +99,21 @@ if(MINGW)
 endif()
 
 add_test(NAME cart_service_tests COMMAND cart_service_tests)
+
+add_executable(
+    checkout_service_tests
+    CheckoutServiceTests.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/ProductRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/CouponRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/OrderRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/ProductService.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/CheckoutService.cpp
+)
+
+target_include_directories(checkout_service_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if(MINGW)
+    target_link_options(checkout_service_tests PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+add_test(NAME checkout_service_tests COMMAND checkout_service_tests)

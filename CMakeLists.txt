@@ -38,6 +38,7 @@ add_executable(
     src/services/AuthService.cpp
     src/services/ProductService.cpp
     src/services/CartService.cpp
+    src/services/CheckoutService.cpp
     src/ui/MainMenu.cpp
     src/ui/ProductManagementUI.cpp
 )

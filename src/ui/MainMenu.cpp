@@ -1,7 +1,10 @@
 #include "ui/MainMenu.h"
 
+#include "repositories/CouponRepository.h"
+#include "repositories/OrderRepository.h"
 #include "repositories/ProductRepository.h"
 #include "services/CartService.h"
+#include "services/CheckoutService.h"
 #include "services/ProductService.h"
 #include "ui/ProductManagementUI.h"
 
@@ -164,6 +167,9 @@ void MainMenu::handleStartCheckout() {
     ProductRepository repository("data/products.csv");
     ProductService productService(repository);
     CartService cartService(productService);
+    CouponRepository couponRepository("data/coupons.csv");
+    OrderRepository orderRepository("data/orders.csv");
+    CheckoutService checkoutService(productService, couponRepository, orderRepository);
 
     while (true) {
         std::cout << "\n============================" << std::endl;
@@ -174,6 +180,7 @@ void MainMenu::handleStartCheckout() {
         std::cout << "  3. 查看购物车" << std::endl;
         std::cout << "  4. 修改商品数量" << std::endl;
         std::cout << "  5. 移除商品" << std::endl;
+        std::cout << "  6. 结账" << std::endl;
         std::cout << "  0. 返回上级菜单" << std::endl;
         std::cout << "============================" << std::endl;
         std::cout << "请输入菜单编号：";
@@ -242,6 +249,37 @@ void MainMenu::handleStartCheckout() {
                     showCart(cartService);
                 } catch (const std::exception& e) {
                     std::cout << "移除失败：" << e.what() << std::endl;
+                }
+                break;
+            }
+            case 6: {
+                if (cartService.empty()) {
+                    std::cout << "购物车为空，无法结账。" << std::endl;
+                    break;
+                }
+
+                std::string couponCode;
+                std::string paidAmountText;
+                std::cout << "优惠券码（直接回车表示不使用）：";
+                std::getline(std::cin, couponCode);
+                std::cout << "实付金额：";
+                std::getline(std::cin, paidAmountText);
+
+                try {
+                    Order order = checkoutService.checkout(
+                        cartService.getItems(),
+                        auth_.getCurrentEmployee().id,
+                        couponCode,
+                        std::stod(paidAmountText));
+                    std::cout << "结账成功。订单号：" << order.orderId << std::endl;
+                    std::cout << "原价：" << std::fixed << std::setprecision(2) << order.originTotal
+                              << "，优惠：" << order.discountAmount
+                              << "，应付：" << order.payableAmount
+                              << "，实付：" << order.paidAmount
+                              << "，找零：" << order.changeAmount << std::endl;
+                    cartService.clear();
+                } catch (const std::exception& e) {
+                    std::cout << "结账失败：" << e.what() << std::endl;
                 }
                 break;
             }

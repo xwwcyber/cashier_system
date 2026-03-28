@@ -9,6 +9,7 @@
 - 仓储层测试优先使用独立测试可执行文件配合临时目录，避免直接读写仓库内 `data/` 目录
 - 购物车服务直接复用 `OrderItem` 作为内存条目结构，后续结账可直接消费 `CartService::getItems()`
 - 购物车数量变更时需要重新查询商品并校验 `status` 与库存，不能只基于旧条目做增量判断
+- 结账统一通过 `CheckoutService` 执行，传入购物车条目、收银员 ID、优惠券码和实付金额后，同步完成折扣计算、库存扣减、优惠券核销与订单追加写入
 
 ## 2026-03-28 21:38:13 - US-001
 - 完成项目脚手架初始化，新增 `include/`、`src/`、`data/`、`tests/` 目录
@@ -113,4 +114,16 @@
   - 购物车服务直接复用 `OrderItem` 作为内存条目结构，可减少结账阶段的数据映射
   - 购物车在增量加入同一商品时，库存校验应基于“已有数量 + 本次新增数量”
   - 控制台列表展示可沿用 `std::setw` + `std::fixed` + `std::setprecision(2)` 的输出模式
+---
+## 2026-03-29 00:21:33 - US-010
+- 实现 `CheckoutService`（`include/services/CheckoutService.h` + `src/services/CheckoutService.cpp`），支持优惠计算、实付校验、找零、订单生成、商品库存扣减、优惠券核销与订单追加写入
+- 更新 `src/ui/MainMenu.cpp`，在购物车子菜单中新增“结账”入口，支持输入优惠券码和实付金额，并在成功后清空购物车
+- 新增 `tests/CheckoutServiceTests.cpp`，覆盖：固定减免、百分比折扣、最低消费校验、实付不足拒绝、结账成功后订单落盘/库存扣减/优惠券核销五类测试
+- 更新 `CMakeLists.txt` 与 `tests/CMakeLists.txt`，接入 `CheckoutService` 与 `checkout_service_tests`
+- 执行 `cmake -S . -B build && cmake --build build && ctest --test-dir build --output-on-failure`，全部 8 项测试通过
+- Files changed: include/services/CheckoutService.h, src/services/CheckoutService.cpp, src/ui/MainMenu.cpp, tests/CheckoutServiceTests.cpp, CMakeLists.txt, tests/CMakeLists.txt, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - 结账逻辑集中在 `CheckoutService`，UI 层只负责采集输入与展示结果，避免在菜单代码里直接操作仓储
+  - 结账前先完成优惠与实付校验，只有校验通过后才执行库存扣减、优惠券核销与订单写入，便于保持状态一致性
+  - 结账测试可复用临时目录下的 products/coupons/orders 三个 CSV 文件，直接断言持久化副作用是否生效
 ---

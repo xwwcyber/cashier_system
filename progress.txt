@@ -155,3 +155,16 @@
   - 商品分类通过 ProductRepository 查询，若商品已删除则回退到 "其他" 分类
   - Top 5 商品按 `totalQuantity` 降序排列，使用 `std::sort` + lambda 实现
 ---
+## 2026-03-29 - US-013
+- 实现 `EmployeeManagementService`（`include/services/EmployeeManagementService.h` + `src/services/EmployeeManagementService.cpp`），支持新增员工、重置密码、删除员工，所有变更立即持久化
+- 实现 `EmployeeManagementUI`（`include/ui/EmployeeManagementUI.h` + `src/ui/EmployeeManagementUI.cpp`），提供查看列表、新增、重置密码、删除四个子功能
+- 更新 `src/ui/MainMenu.cpp`，将 `handleEmployeeManagement` 从占位 stub 替换为真实子菜单
+- 新增 `tests/EmployeeManagementServiceTests.cpp`，覆盖初始数据、新增成功、重复 ID、非法角色、重置密码、删除成功、自删保护、不存在员工、持久化共 10 类测试
+- 更新 `CMakeLists.txt` 与 `tests/CMakeLists.txt`，接入新源文件与测试目标
+- 执行全部构建与测试，11 项测试全部通过
+- Files changed: include/services/EmployeeManagementService.h, src/services/EmployeeManagementService.cpp, include/ui/EmployeeManagementUI.h, src/ui/EmployeeManagementUI.cpp, src/ui/MainMenu.cpp, CMakeLists.txt, tests/CMakeLists.txt, tests/EmployeeManagementServiceTests.cpp, prd.json, progress.txt
+- **Learnings for future iterations:**
+  - most vexing parse：`Service s(Repo(path))` 会被解析为函数声明，务必先用具名变量 `Repo repo(path); Service s(repo);`
+  - 删除自身保护通过传入 `currentOperatorId` 参数实现，UI 层从 `auth_.getCurrentEmployee().id` 获取
+  - 员工列表展示时只显示 id/name/role，不输出 passwordHash
+---

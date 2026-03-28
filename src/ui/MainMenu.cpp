@@ -1,6 +1,7 @@
 #include "ui/MainMenu.h"
 
 #include "repositories/CouponRepository.h"
+#include "repositories/EmployeeRepository.h"
 #include "repositories/OrderRepository.h"
 #include "repositories/ProductRepository.h"
 #include "services/CartService.h"
@@ -8,6 +9,8 @@
 #include "services/InventoryService.h"
 #include "services/ProductService.h"
 #include "services/SalesReportService.h"
+#include "services/EmployeeManagementService.h"
+#include "ui/EmployeeManagementUI.h"
 #include "ui/InventoryManagementUI.h"
 #include "ui/ProductManagementUI.h"
 #include "ui/SalesReportUI.h"
@@ -323,9 +326,10 @@ void MainMenu::handleCouponManagement() {
 }
 
 void MainMenu::handleEmployeeManagement() {
-    std::cout << "[员工管理] 功能即将推出。按 Enter 返回。" << std::endl;
-    std::string dummy;
-    std::getline(std::cin, dummy);
+    EmployeeRepository repository("data/employees.csv");
+    EmployeeManagementService service(repository);
+    EmployeeManagementUI ui(std::move(service), auth_.getCurrentEmployee().id);
+    ui.run();
 }
 
 void MainMenu::handleSalesReport() {

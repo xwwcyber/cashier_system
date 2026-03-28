@@ -148,3 +148,18 @@ if(MINGW)
 endif()
 
 add_test(NAME sales_report_service_tests COMMAND sales_report_service_tests)
+
+add_executable(
+    employee_management_service_tests
+    EmployeeManagementServiceTests.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/EmployeeRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/EmployeeManagementService.cpp
+)
+
+target_include_directories(employee_management_service_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if(MINGW)
+    target_link_options(employee_management_service_tests PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+add_test(NAME employee_management_service_tests COMMAND employee_management_service_tests)

@@ -68,3 +68,34 @@ if(MINGW)
 endif()
 
 add_test(NAME auth_service_tests COMMAND auth_service_tests)
+
+add_executable(
+    product_service_tests
+    ProductServiceTests.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/ProductRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/ProductService.cpp
+)
+
+target_include_directories(product_service_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if(MINGW)
+    target_link_options(product_service_tests PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+add_test(NAME product_service_tests COMMAND product_service_tests)
+
+add_executable(
+    cart_service_tests
+    CartServiceTests.cpp
+    ${CMAKE_SOURCE_DIR}/src/repositories/ProductRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/ProductService.cpp
+    ${CMAKE_SOURCE_DIR}/src/services/CartService.cpp
+)
+
+target_include_directories(cart_service_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if(MINGW)
+    target_link_options(cart_service_tests PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+add_test(NAME cart_service_tests COMMAND cart_service_tests)

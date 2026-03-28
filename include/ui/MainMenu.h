@@ -22,7 +22,7 @@ private:
     /** 显示并处理收银员主菜单，返回 false 表示退出登录。 */
     bool showCashierMenu();
 
-    // --- 子菜单占位（后续 US 实现具体功能）---
+    // --- 子菜单处理 ---
     void handleStartCheckout();
     void handleProductManagement();
     void handleInventoryManagement();

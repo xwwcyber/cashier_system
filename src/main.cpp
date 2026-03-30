@@ -1,11 +1,19 @@
 #include <iostream>
 #include <string>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "repositories/EmployeeRepository.h"
 #include "services/AuthService.h"
 #include "ui/MainMenu.h"
 
 int main() {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
     std::cout << "==============================" << std::endl;
     std::cout << "      AI 收银系统 v1.0        " << std::endl;
     std::cout << "==============================" << std::endl;

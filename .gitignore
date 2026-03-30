@@ -1,1 +1,5 @@
 build/
+prd.json
+progress.txt
+scripts/ralph/
+data/*.csv
